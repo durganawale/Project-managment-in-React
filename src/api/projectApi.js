@@ -1,45 +1,68 @@
-import axios from "axios"
-import axiosInstance from "./axiosInstance"
 
-export async function getAllProjects(){
-    try {
-        const res = await axiosInstance.get("/projects")
-        console.log(res.data)
-        const re = res.data
-        return re
-    } catch (error) {
-        throw error
-    }
+import axiosInstance from "./axiosInstance";
+
+// Get all projects
+export async function getAllProjects() {
+  try {
+    const res = await axiosInstance.get("/projects");
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    throw error;
+  }
 }
 
-export function getProjectByID(ID){}
-export function updateStatus(ID, data){
-    try {
-        const res = axiosInstance.patch(`/projects/${ID}`,data )
-        if(res){
-            return "Status Updated"
-        }else{
-        return "Error While Updating"
-        }
-    } catch (error) {
-        throw error
-        return "Error While Updating"
-    }
+// Get project by ID
+export async function getProjectByID(ID) {
+  try {
+    const res = await axiosInstance.get(`/projects/${ID}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching project:", error);
+    throw error;
+  }
 }
 
-export function updateProject(ID, data){}
-
-export async function deleteProject(ID){
-        try {
-        const res = await axiosInstance.delete(`/projects/${ID}`)
-        if(res){
-        return "Project Deleted Successfully"
-        }else{
-        return "Error While Deleting"
-        }
-    } catch (error) {
-        throw error
-                return "Error While Deleting"
-    }
+// Create new project
+export async function createProject(data) {
+  try {
+    const res = await axiosInstance.post("/projects", data);
+    return res.data;
+  } catch (error) {
+    console.error("Error creating project:", error);
+    throw error;
+  }
 }
-export function createProject(Data){}
+
+// Update project
+export async function updateProject(ID, data) {
+  try {
+    const res = await axiosInstance.patch(`/projects/${ID}`, data);
+    return res.data;
+  } catch (error) {
+    console.error("Error updating project:", error);
+    throw error;
+  }
+}
+
+// Update project status
+export async function updateStatus(ID, data) {
+  try {
+    const res = await axiosInstance.patch(`/projects/${ID}`, data);
+    return res.data;
+  } catch (error) {
+    console.error("Error updating status:", error);
+    throw error;
+  }
+}
+
+// Delete project
+export async function deleteProject(ID) {
+  try {
+    const res = await axiosInstance.delete(`/projects/${ID}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    throw error;
+  }
+}

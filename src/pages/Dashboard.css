@@ -155,3 +155,15 @@
   border-color: #4f46e5;
 }
 
+
+.project-link {
+  color: black;
+  text-decoration: none;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.project-link:hover {
+  color: black;
+  text-decoration: none;
+}

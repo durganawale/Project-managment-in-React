@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getAllProjects, deleteProject } from "../api/projectApi";
 import "./Dashboard.css";
+import { Link } from "react-router-dom";
+import ProjectModal from "../Compounts/ProjectModel";
+import {
+  getAllProjects,
+  createProject,
+  updateProject,
+} from "../api/projectApi";
 
 const Dashboard = () => {
   const [projects, setProjects] = useState([]);
@@ -9,6 +15,9 @@ const Dashboard = () => {
   const [filterStatus, setFilterStatus] = useState("All");
   const [priorityStatus, setPriorityStatus] = useState("All");
   const [departmentStatus, setDepartmentStatus] = useState("All");
+
+  const [showModal, setShowModal] = useState(false);
+  const [editProject, setEditProject] = useState(null);
 
   // Fetch all projects
   async function fetchAllData() {
@@ -55,6 +64,37 @@ const Dashboard = () => {
     return searchMatch && statusMatch && priorityMatch && departmentMatch;
   });
 
+  function handleAdd() {
+    setEditProject(null);
+    setShowModal(true);
+  }
+
+  function handleEdit(project) {
+    setEditProject(project);
+    setShowModal(true);
+  }
+
+  async function handleSave(formData) {
+    try {
+      if (editProject) {
+        await updateProject(editProject.id, formData);
+        alert("Project Updated Successfully");
+      } else {
+        await createProject(formData);
+        alert("Project Added Successfully");
+      }
+
+      const data = await getAllProjects();
+      setProjects(data);
+
+      setShowModal(false);
+      setEditProject(null);
+    } catch (error) {
+      console.error("Project save error:", error);
+      alert("Error while saving project");
+    }
+  }
+
   // Handle status selection locally
   const handleChange = (id, value) => {
     setStatus((prev) => ({
@@ -95,6 +135,16 @@ const Dashboard = () => {
 
   return (
     <>
+      <ProjectModal
+        show={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setEditProject(null);
+        }}
+        onSave={handleSave}
+        editProject={editProject}
+      />
+
       <div className="filtersearch">
         {/* Search */}
         <input
@@ -155,7 +205,9 @@ const Dashboard = () => {
       </div>
 
       <div>
-        <button type="button">Add New Project</button>
+        <button type="button" className="btn btn-primary" onClick={handleAdd}>
+          Add New Project
+        </button>
       </div>
 
       <div className="project-table-card">
@@ -180,10 +232,15 @@ const Dashboard = () => {
                   <td>{index + 1}</td>
 
                   <td>
-                    {project.ProjectName ||
-                      project.title ||
-                      project.name ||
-                      "N/A"}
+                    <Link
+                      to={`/projects/${project.id}`}
+                      className="project-link"
+                    >
+                      {project.ProjectName ||
+                        project.title ||
+                        project.name ||
+                        "N/A"}
+                    </Link>
                   </td>
 
                   <td>{project.Department || "N/A"}</td>
@@ -206,17 +263,15 @@ const Dashboard = () => {
                   <td>
                     <button
                       type="button"
-                      className="edit-btn"
-                      onClick={() =>
-                        alert("Edit functionality is not added yet.")
-                      }
+                      className="btn btn-warning  me-2"
+                      onClick={() => handleEdit(project)}
                     >
                       Edit
                     </button>
 
                     <button
                       type="button"
-                      className="delete-btn"
+                      className="delete-btn  me-2"
                       onClick={() => handleDelete(project.id)}
                     >
                       Delete
@@ -231,6 +286,16 @@ const Dashboard = () => {
             )}
           </tbody>
         </table>
+
+        <ProjectModal
+          show={showModal}
+          onClose={() => {
+            setShowModal(false);
+            setEditProject(null);
+          }}
+          onSave={handleSave}
+          editProject={editProject}
+        />
       </div>
     </>
   );
